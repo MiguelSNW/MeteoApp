@@ -4,52 +4,43 @@ import { useEffect, useState } from "react";
 import "./App.css";
 
 export default function App() {
-  const [ubicacion, setUbicacion] = useState("Cargando...");
   const [ciudad, setCiudad] = useState("Cargando ciudad...");
   const [grados, setGrados] = useState("");
   const [icono, setIcono] = useState("");
   const [prevision, setPrevision] = useState([]);
-  const [error, setError] = useState(null);
   const [ciudadBuscada, setCiudadBuscada] = useState("");
-  const [latLon, setLatLon] = useState({ lat: null, lon: null });
   const API_KEY = "540b9a83b121afb1ddbd36ea51d9a72a";
 
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const { latitude, longitude } = position.coords;
-          try {
-            const res = await fetch(
-              `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric&lang=es`
-            );
-            if (!res.ok) throw new Error("Error al obtener datos del clima");
+    if (!navigator.geolocation) return;
 
-            const data = await res.json();
-            setUbicacion(
-              `${data.name}, ${data.sys.country} — ${data.weather[0].description}, ${data.main.temp}°C`
-            );
-            setCiudad(data.name);
-            setGrados(`${Math.round(data.main.temp)}°C`);
-            setIcono(
-              `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`
-            );
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        try {
+          const res = await fetch(
+            `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric&lang=es`
+          );
+          if (!res.ok) throw new Error("Error al obtener datos del clima");
 
-            const previsiones = await obtenerPrevision(latitude, longitude);
-            setPrevision(previsiones);
-          } catch (err) {
-            console.error(err);
-            setError("Error al obtener datos de la API de clima.");
-          }
-        },
-        (err) => {
-          setError(`Error de geolocalización: ${err.message}`);
-        },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-      );
-    } else {
-      setError("Geolocalización no soportada por este navegador.");
-    }
+          const data = await res.json();
+          setCiudad(data.name);
+          setGrados(`${Math.round(data.main.temp)}°C`);
+          setIcono(
+            `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`
+          );
+
+          const previsiones = await obtenerPrevision(latitude, longitude);
+          setPrevision(previsiones);
+        } catch (err) {
+          console.error("Error obteniendo clima:", err);
+        }
+      },
+      (err) => {
+        console.error("Error de geolocalización:", err.message);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
 
     async function obtenerPrevision(lat, lon) {
       const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,weathercode,windspeed_10m_max&timezone=Europe/Madrid`;
@@ -63,7 +54,6 @@ export default function App() {
   const buscarCiudad = async () => {
     if (!ciudadBuscada) return;
 
-    const API_KEY = "540b9a83b121afb1ddbd36ea51d9a72a";
     try {
       const res = await fetch(
         `https://api.openweathermap.org/geo/1.0/direct?q=${ciudadBuscada}&limit=1&appid=${API_KEY}`
@@ -72,10 +62,6 @@ export default function App() {
 
       if (data.length > 0) {
         const { lat, lon } = data[0];
-        setLatLon({ lat, lon });
-        console.log("Latitud:", lat, "Longitud:", lon);
-
-        // Aquí puedes llamar a la API del clima con esas coordenadas
         obtenerClima(lat, lon);
 
         const previsiones = await obtenerPrevision(lat, lon);
@@ -92,12 +78,11 @@ export default function App() {
         console.error("Ciudad no encontrada");
       }
     } catch (err) {
-      console.error("Error buscando ciudad", err);
+      console.error("Error buscando ciudad:", err);
     }
   };
 
   const obtenerClima = async (lat, lon) => {
-    const API_KEY = "540b9a83b121afb1ddbd36ea51d9a72a";
     try {
       const res = await fetch(
         `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=es`
@@ -109,10 +94,9 @@ export default function App() {
         `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`
       );
     } catch (err) {
-      console.error("Error obteniendo clima", err);
+      console.error("Error obteniendo clima:", err);
     }
   };
-
   return (
     <div
       className="container-fluid p-3 d-flex flex-column align-items-center"

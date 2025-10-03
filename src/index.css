@@ -15,7 +15,7 @@ body {
   flex: 1;
   height: 50px;
   border-radius: 15px 0 0 15px;
-  background-color: rgba(36, 33, 33, 0.46); /* tu color original */
+  background-color: rgba(36, 33, 33, 0.45); /* tu color original */
   border: 1px solid rgba(255, 255, 255, 0.5); /* tu borde original */
   color: white;
   padding: 0 15px;
