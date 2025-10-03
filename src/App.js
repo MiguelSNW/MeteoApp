@@ -1,6 +1,6 @@
+import { useEffect, useState, useCallback } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { useEffect, useState } from "react";
 import "./App.css";
 
 export default function App() {
@@ -14,32 +14,35 @@ export default function App() {
   const API_KEY = "540b9a83b121afb1ddbd36ea51d9a72a";
 
   // ---- FUNCIONES REUTILIZABLES ----
-  const obtenerClima = async (lat, lon) => {
-    try {
-      const res = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=es`
-      );
-      if (!res.ok) throw new Error("Error al obtener datos del clima");
-      const data = await res.json();
-      setCiudad(data.name);
-      setGrados(`${Math.round(data.main.temp)}°C`);
-      setIcono(
-        `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`
-      );
-    } catch (err) {
-      console.error("Error obteniendo clima:", err);
-    }
-  };
+  const obtenerClima = useCallback(
+    async (lat, lon) => {
+      try {
+        const res = await fetch(
+          `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=es`
+        );
+        if (!res.ok) throw new Error("Error al obtener datos del clima");
+        const data = await res.json();
+        setCiudad(data.name);
+        setGrados(`${Math.round(data.main.temp)}°C`);
+        setIcono(
+          `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`
+        );
+      } catch (err) {
+        console.error("Error obteniendo clima:", err);
+      }
+    },
+    [API_KEY]
+  );
 
-  const obtenerPrevision = async (lat, lon) => {
+  const obtenerPrevision = useCallback(async (lat, lon) => {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,weathercode,windspeed_10m_max&timezone=Europe/Madrid`;
     const res = await fetch(url);
     if (!res.ok) throw new Error("Error obteniendo datos");
     const data = await res.json();
     return data.daily;
-  };
+  }, []);
 
-  const pedirUbicacion = () => {
+  const pedirUbicacion = useCallback(() => {
     if (!navigator.geolocation) {
       console.error("Geolocalización no soportada");
       setCiudad("Geolocalización no soportada");
@@ -52,22 +55,22 @@ export default function App() {
         await obtenerClima(latitude, longitude);
         const previsiones = await obtenerPrevision(latitude, longitude);
         setPrevision(previsiones);
-        setNecesitaPermiso(false); // ya no necesitamos botón
+        setNecesitaPermiso(false);
       },
       (err) => {
         console.error("Error de geolocalización:", err.message);
-        setNecesitaPermiso(true); // si falla, mostramos el botón
+        setNecesitaPermiso(true);
       },
       { enableHighAccuracy: true, timeout: 10000 }
     );
-  };
+  }, [obtenerClima, obtenerPrevision]);
 
   // Intento automático al cargar
   useEffect(() => {
     pedirUbicacion();
-  }, []);
+  }, [pedirUbicacion]);
 
-  const buscarCiudad = async () => {
+  const buscarCiudad = useCallback(async () => {
     if (!ciudadBuscada) return;
 
     try {
@@ -87,9 +90,8 @@ export default function App() {
     } catch (err) {
       console.error("Error buscando ciudad:", err);
     }
-  };
+  }, [ciudadBuscada, API_KEY, obtenerClima, obtenerPrevision]);
 
-  // ---- RENDER ----
   return (
     <div
       className="container-fluid p-3 d-flex flex-column align-items-center"
@@ -122,6 +124,20 @@ export default function App() {
         </span>
       </div>
 
+      {/* Mensaje si no se dio permiso */}
+      {necesitaPermiso && (
+        <div
+          className="alert alert-warning text-center mt-3"
+          style={{ maxWidth: "400px" }}
+        >
+          Necesitamos tu ubicación para mostrar el clima.
+          <br />
+          <button className="btn btn-sm btn-dark mt-2" onClick={pedirUbicacion}>
+            Dar permiso
+          </button>
+        </div>
+      )}
+
       {/* Texto de ubicación */}
       <div
         className="text-center"
@@ -141,13 +157,6 @@ export default function App() {
           color: "white",
         }}
       >
-        {/* Botón extra si Safari bloquea */}
-        {necesitaPermiso && (
-          <button className="btn btn-light mb-3" onClick={pedirUbicacion}>
-            Permitir ubicación
-          </button>
-        )}
-
         {/* Ciudad y temperatura */}
         <div className="ciudad-temperatura">
           <span className="nombre-ciudad">{ciudad}</span>
