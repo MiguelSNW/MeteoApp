@@ -149,38 +149,19 @@ export default function App() {
         }}
       >
         {/* Ciudad y temperatura */}
-        <span
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "20px",
-            flexWrap: "wrap",
-          }}
-        >
-          <span style={{ fontSize: "2.5vw", fontWeight: "500" }}>{ciudad}</span>
-          <span
-            style={{
-              fontSize: "1.5vw",
-              display: "flex",
-              alignItems: "center",
-              fontWeight: "700",
-            }}
-          >
+        <div className="ciudad-temperatura">
+          <span className="nombre-ciudad">{ciudad}</span>
+          <span className="temperatura">
             {grados}
             {icono && (
               <img
                 src={icono}
                 alt="icono del clima"
-                style={{
-                  marginLeft: "10px",
-                  width: "40px",
-                  height: "40px",
-                }}
+                className="icono-principal"
               />
             )}
           </span>
-        </span>
+        </div>
 
         {/* Previsión de 7 días */}
         <div style={{ marginTop: "20px", width: "100%" }}>

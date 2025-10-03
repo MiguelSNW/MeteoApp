@@ -2,24 +2,30 @@
 
 body {
   font-family: "Bebas Neue", sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: #000;
 }
 
+/* Input de búsqueda */
 .input-buscador-container {
   display: flex;
-  width: 100%;
+  width: 90%;
   max-width: 600px;
-  margin-top: 20px;
+  margin: 20px auto 30px auto;
 }
 
 .input-buscador {
   flex: 1;
   height: 50px;
   border-radius: 15px 0 0 15px;
-  background-color: rgba(36, 33, 33, 0.46); /* tu color original */
-  border: 1px solid rgba(255, 255, 255, 0.5); /* tu borde original */
+  background-color: rgba(36, 33, 33, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   color: white;
   padding: 0 15px;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
 }
 
 .input-buscador::placeholder {
@@ -29,56 +35,23 @@ body {
 
 .buscador-icono {
   height: 50px;
-  background-color: rgba(36, 33, 33, 0.46); /* tu color original */
-  border: 1px solid rgba(255, 255, 255, 0.5); /* tu borde original */
+  background-color: rgba(36, 33, 33, 0.46);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 0 15px 15px 0;
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 10px;
+  padding: 0 15px;
   cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.3rem;
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
-  .input-buscador {
-    height: 55px;
-    font-size: 1.2rem;
-    padding: 0 18px;
-  }
-
-  .buscador-icono {
-    height: 55px;
-    font-size: 1.3rem;
-  }
+.buscador-icono:hover {
+  background-color: rgba(36, 33, 33, 0.7);
 }
 
-@media (max-width: 768px) {
-  .input-buscador {
-    height: 60px;
-    font-size: 1.3rem;
-    padding: 0 20px;
-  }
-
-  .buscador-icono {
-    height: 60px;
-    font-size: 1.4rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .input-buscador {
-    height: 70px;
-    font-size: 1.4rem;
-    padding: 0 20px;
-  }
-
-  .buscador-icono {
-    height: 70px;
-    font-size: 1.5rem;
-  }
-}
 .input-buscador:focus {
   background-color: rgba(36, 33, 33, 0.46) !important;
   border-color: rgba(255, 255, 255, 0.7) !important;
@@ -86,10 +59,48 @@ body {
   box-shadow: none;
   color: white;
 }
+
+/* Ciudad y temperatura */
+.ciudad-temperatura {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  text-align: center;
+}
+
+.nombre-ciudad {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  display: block;
+}
+
+.temperatura {
+  font-size: clamp(2rem, 5vw, 3.5rem); /* AJUSTADO: Ligeramente más pequeño */
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.icono-principal {
+  margin-left: 10px;
+  width: clamp(50px, 8vw, 80px);
+  height: clamp(50px, 8vw, 80px);
+}
+
+/* Cards de clima */
 .clima-card {
   flex: 1 1 120px;
   max-width: 150px;
-  background: rgba(255, 255, 255, 0.1); /* Fondo glassmorphism */
+  background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   border-radius: 15px;
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -108,19 +119,20 @@ body {
 }
 
 .clima-dia {
-  font-size: 1rem;
+  font-size: 1.1rem;
   margin-bottom: 10px;
-  text-transform: capitalize;
+  text-transform: uppercase;
+  font-weight: bold;
 }
 
 .icono-clima {
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   margin-bottom: 10px;
 }
 
 .clima-temp {
-  font-size: 0.9rem;
+  font-size: 1rem;
   margin: 4px 0;
   font-weight: bold;
 }
@@ -134,34 +146,50 @@ body {
   font-size: 0.9rem;
 }
 
-/* Responsive cards */
+/* Responsividad */
 @media (max-width: 1024px) {
-  .clima-card {
-    flex: 1 1 140px;
-    max-width: 140px;
-  }
-
-  .icono-clima {
-    width: 55px;
+  .input-buscador {
     height: 55px;
+    font-size: 1.3rem;
+  }
+  .buscador-icono {
+    height: 55px;
+    font-size: 1.4rem;
   }
 }
 
 @media (max-width: 768px) {
-  .clima-card {
-    flex: 1 1 45%;
-    max-width: 45%;
+  .input-buscador {
+    height: 60px;
+    font-size: 1.4rem;
+  }
+  .buscador-icono {
+    height: 60px;
+    font-size: 1.5rem;
+  }
+
+  .icono-principal {
+    width: clamp(60px, 10vw, 90px);
+    height: clamp(60px, 10vw, 90px);
   }
 }
 
 @media (max-width: 480px) {
+  .input-buscador {
+    height: 55px;
+    font-size: 1.3rem;
+  }
+  .buscador-icono {
+    height: 55px;
+    font-size: 1.4rem;
+  }
   .clima-card {
     flex: 1 1 90%;
     max-width: 90%;
   }
 
-  .icono-clima {
-    width: 50px;
-    height: 50px;
+  .icono-principal {
+    width: clamp(70px, 12vw, 100px);
+    height: clamp(70px, 12vw, 100px);
   }
 }
