@@ -1,6 +1,6 @@
-import { useEffect, useState, useCallback } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import { useEffect, useState } from "react";
 import "./App.css";
 
 export default function App() {
@@ -9,68 +9,49 @@ export default function App() {
   const [icono, setIcono] = useState("");
   const [prevision, setPrevision] = useState([]);
   const [ciudadBuscada, setCiudadBuscada] = useState("");
-  const [necesitaPermiso, setNecesitaPermiso] = useState(false);
-
   const API_KEY = "540b9a83b121afb1ddbd36ea51d9a72a";
 
-  // ---- FUNCIONES REUTILIZABLES ----
-  const obtenerClima = useCallback(
-    async (lat, lon) => {
-      try {
-        const res = await fetch(
-          `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=es`
-        );
-        if (!res.ok) throw new Error("Error al obtener datos del clima");
-        const data = await res.json();
-        setCiudad(data.name);
-        setGrados(`${Math.round(data.main.temp)}°C`);
-        setIcono(
-          `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`
-        );
-      } catch (err) {
-        console.error("Error obteniendo clima:", err);
-      }
-    },
-    [API_KEY]
-  );
-
-  const obtenerPrevision = useCallback(async (lat, lon) => {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,weathercode,windspeed_10m_max&timezone=Europe/Madrid`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error("Error obteniendo datos");
-    const data = await res.json();
-    return data.daily;
-  }, []);
-
-  const pedirUbicacion = useCallback(() => {
-    if (!navigator.geolocation) {
-      console.error("Geolocalización no soportada");
-      setCiudad("Geolocalización no soportada");
-      return;
-    }
+  useEffect(() => {
+    if (!navigator.geolocation) return;
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
-        await obtenerClima(latitude, longitude);
-        const previsiones = await obtenerPrevision(latitude, longitude);
-        setPrevision(previsiones);
-        setNecesitaPermiso(false);
+        try {
+          const res = await fetch(
+            `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric&lang=es`
+          );
+          if (!res.ok) throw new Error("Error al obtener datos del clima");
+
+          const data = await res.json();
+          setCiudad(data.name);
+          setGrados(`${Math.round(data.main.temp)}°C`);
+          setIcono(
+            `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`
+          );
+
+          const previsiones = await obtenerPrevision(latitude, longitude);
+          setPrevision(previsiones);
+        } catch (err) {
+          console.error("Error obteniendo clima:", err);
+        }
       },
       (err) => {
         console.error("Error de geolocalización:", err.message);
-        setNecesitaPermiso(true);
       },
-      { enableHighAccuracy: true, timeout: 10000 }
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
-  }, [obtenerClima, obtenerPrevision]);
 
-  // Intento automático al cargar
-  useEffect(() => {
-    pedirUbicacion();
-  }, [pedirUbicacion]);
+    async function obtenerPrevision(lat, lon) {
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,weathercode,windspeed_10m_max&timezone=Europe/Madrid`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Error obteniendo datos");
+      const data = await res.json();
+      return data.daily;
+    }
+  }, []);
 
-  const buscarCiudad = useCallback(async () => {
+  const buscarCiudad = async () => {
     if (!ciudadBuscada) return;
 
     try {
@@ -81,17 +62,41 @@ export default function App() {
 
       if (data.length > 0) {
         const { lat, lon } = data[0];
-        await obtenerClima(lat, lon);
+        obtenerClima(lat, lon);
+
         const previsiones = await obtenerPrevision(lat, lon);
         setPrevision(previsiones);
+
+        async function obtenerPrevision(lat, lon) {
+          const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,weathercode,windspeed_10m_max&timezone=Europe/Madrid`;
+          const res = await fetch(url);
+          if (!res.ok) throw new Error("Error obteniendo datos");
+          const data = await res.json();
+          return data.daily;
+        }
       } else {
         console.error("Ciudad no encontrada");
       }
     } catch (err) {
       console.error("Error buscando ciudad:", err);
     }
-  }, [ciudadBuscada, API_KEY, obtenerClima, obtenerPrevision]);
+  };
 
+  const obtenerClima = async (lat, lon) => {
+    try {
+      const res = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=es`
+      );
+      const data = await res.json();
+      setCiudad(data.name);
+      setGrados(`${Math.round(data.main.temp)}°C`);
+      setIcono(
+        `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`
+      );
+    } catch (err) {
+      console.error("Error obteniendo clima:", err);
+    }
+  };
   return (
     <div
       className="container-fluid p-3 d-flex flex-column align-items-center"
@@ -123,20 +128,6 @@ export default function App() {
           <i className="bi bi-geo-alt"></i>
         </span>
       </div>
-
-      {/* Mensaje si no se dio permiso */}
-      {necesitaPermiso && (
-        <div
-          className="alert alert-warning text-center mt-3"
-          style={{ maxWidth: "400px" }}
-        >
-          Necesitamos tu ubicación para mostrar el clima.
-          <br />
-          <button className="btn btn-sm btn-dark mt-2" onClick={pedirUbicacion}>
-            Dar permiso
-          </button>
-        </div>
-      )}
 
       {/* Texto de ubicación */}
       <div
