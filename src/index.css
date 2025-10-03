@@ -1,13 +1,167 @@
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap");
+
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-family: "Bebas Neue", sans-serif;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.input-buscador-container {
+  display: flex;
+  width: 100%;
+  max-width: 600px;
+  margin-top: 20px;
+}
+
+.input-buscador {
+  flex: 1;
+  height: 50px;
+  border-radius: 15px 0 0 15px;
+  background-color: rgba(36, 33, 33, 0.46); /* tu color original */
+  border: 1px solid rgba(255, 255, 255, 0.5); /* tu borde original */
+  color: white;
+  padding: 0 15px;
+  font-size: 1.1rem;
+}
+
+.input-buscador::placeholder {
+  color: white;
+  opacity: 1;
+}
+
+.buscador-icono {
+  height: 50px;
+  background-color: rgba(36, 33, 33, 0.46); /* tu color original */
+  border: 1px solid rgba(255, 255, 255, 0.5); /* tu borde original */
+  border-radius: 0 15px 15px 0;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  cursor: pointer;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .input-buscador {
+    height: 55px;
+    font-size: 1.2rem;
+    padding: 0 18px;
+  }
+
+  .buscador-icono {
+    height: 55px;
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .input-buscador {
+    height: 60px;
+    font-size: 1.3rem;
+    padding: 0 20px;
+  }
+
+  .buscador-icono {
+    height: 60px;
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .input-buscador {
+    height: 70px;
+    font-size: 1.4rem;
+    padding: 0 20px;
+  }
+
+  .buscador-icono {
+    height: 70px;
+    font-size: 1.5rem;
+  }
+}
+.input-buscador:focus {
+  background-color: rgba(36, 33, 33, 0.46) !important;
+  border-color: rgba(255, 255, 255, 0.7) !important;
+  outline: none;
+  box-shadow: none;
+  color: white;
+}
+.clima-card {
+  flex: 1 1 120px;
+  max-width: 150px;
+  background: rgba(255, 255, 255, 0.1); /* Fondo glassmorphism */
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.clima-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+.clima-dia {
+  font-size: 1rem;
+  margin-bottom: 10px;
+  text-transform: capitalize;
+}
+
+.icono-clima {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 10px;
+}
+
+.clima-temp {
+  font-size: 0.9rem;
+  margin: 4px 0;
+  font-weight: bold;
+}
+
+.icono-viento {
+  width: 18px;
+  height: 18px;
+}
+
+.clima-viento {
+  font-size: 0.9rem;
+}
+
+/* Responsive cards */
+@media (max-width: 1024px) {
+  .clima-card {
+    flex: 1 1 140px;
+    max-width: 140px;
+  }
+
+  .icono-clima {
+    width: 55px;
+    height: 55px;
+  }
+}
+
+@media (max-width: 768px) {
+  .clima-card {
+    flex: 1 1 45%;
+    max-width: 45%;
+  }
+}
+
+@media (max-width: 480px) {
+  .clima-card {
+    flex: 1 1 90%;
+    max-width: 90%;
+  }
+
+  .icono-clima {
+    width: 50px;
+    height: 50px;
+  }
 }
