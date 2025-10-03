@@ -193,3 +193,16 @@ body {
     height: clamp(70px, 12vw, 100px);
   }
 }
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.container-fluid {
+  min-height: 100vh;
+  height: 100svh;
+}
